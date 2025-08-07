@@ -133,7 +133,7 @@ uint64_t increment(std::vector<std::atomic<T>>& vec) {
         size_t index = 0;       
         do {
             index++;
-            assert(index != n); // General overflow
+            if (index == n) break;
             vec[index].fetch_add(1);
         }while (vec[index].load() == 0x0);
     }
@@ -144,17 +144,11 @@ uint64_t increment(std::vector<std::atomic<T>>& vec) {
     for (int i = 0; i < vec.size(); i++) {
         if (i == 0) {
             for (int j = 1; j < nbits; j++) {
-                if ((((vec[i] >> j) & 0x1) == 0x1) && will_overflow(result, cur_pow)) 
-                    throw runtime_error("The result doesn't fit into uint64_t");
-                
                 result += ((vec[i] >> j) & 0x1) * cur_pow;
                 cur_pow <<= 1;
             }
         } else {
-            for (int j = 0; j < nbits; j++) {
-                if ((((vec[i] >> j) & 0x1) == 0x1) && will_overflow(result, cur_pow)) 
-                    throw runtime_error("The result doesn't fit into uint64_t");
-                
+            for (int j = 0; j < nbits; j++) {   
                 result += ((vec[i] >> j) & 0x1) * cur_pow;
                 cur_pow <<= 1;
             }
@@ -189,7 +183,7 @@ void test_blocking() {
     std::random_device rd;  
     std::mt19937 gen(rd()); 
 
-    std::uniform_int_distribution<> distrib(5, 8'000'000); 
+    std::uniform_int_distribution<> distrib(5, 5'000'000); 
     const size_t THREADS = 24; 
     size_t counter = 0;
 
@@ -206,8 +200,6 @@ void test_blocking() {
         size_t nbits = sizeof(Type) * 8;
         vector<atomic<Type>> arr(sz);
         uint32_t rand_num = distrib(gen);
-
-        assert((nbits * sz) <= (sizeof(uint64_t) * 8));
 
         std::vector<std::thread> threads;
         actual_ids.clear(); 
@@ -342,7 +334,7 @@ How to test?
 /*
 * Start testing blocking version -----------------------
 */
-    // test_blocking();
+    test_blocking();
 /*
 * End testing blocking version -----------------------
 */

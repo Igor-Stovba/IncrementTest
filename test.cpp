@@ -41,7 +41,7 @@ uint64_t get_max() {
 #endif // DUMMY_SOLUTION
 
 
-#define BLOCKING_SOLUTION 0
+#define BLOCKING_SOLUTION 1
 #if BLOCKING_SOLUTION
 
 /*
@@ -73,7 +73,7 @@ uint64_t get_max() {
 #endif // BLOCKING_SOLUTION 
 
 
-#define LOCK_FREE_SOLUTION 1
+#define LOCK_FREE_SOLUTION 0
 #if LOCK_FREE_SOLUTION
 
 /*
